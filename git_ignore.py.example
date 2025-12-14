@@ -1,0 +1,139 @@
+"""
+Project-specific path configuration - EXAMPLE TEMPLATE
+Copy this file to git_ignore.py and modify the paths for your environment.
+
+Usage:
+    cp git_ignore.py.example git_ignore.py
+    # Then edit git_ignore.py with your actual paths
+"""
+
+import os
+from pathlib import Path
+
+# ============================================================================
+# Project Root Directory
+# ============================================================================
+# Automatically detect the project root (where this file is located)
+PROJECT_ROOT = Path(__file__).parent.resolve()
+
+# ============================================================================
+# User-specific Base Paths
+# ============================================================================
+# Base directory for user data and projects
+# Example: /home/username/projects or /gpfs/projects/p32509/userdata/username
+USER_DATA_BASE = Path("/path/to/your/userdata")
+
+# Base directory for models
+# Example: /home/username/models or /path/to/shared/models
+MODEL_BASE = Path("/path/to/your/models")
+
+# ============================================================================
+# Specific Directory Paths
+# ============================================================================
+# World model VLM benchmark directory
+WORLD_MODEL_VLM_DIR = USER_DATA_BASE / "world_model_vlm"
+
+# VERL project directory (can use PROJECT_ROOT or specify manually)
+VERL_PROJECT_DIR = PROJECT_ROOT
+
+# ============================================================================
+# Data Paths
+# ============================================================================
+# Fake dataset JSON file
+FAKE_DATASET_JSON = WORLD_MODEL_VLM_DIR / "benchmark" / "prompt" / "fake_dataset.json"
+
+# Data output directory (for parquet files)
+DATA_OUTPUT_DIR = VERL_PROJECT_DIR
+
+# ============================================================================
+# Model Paths
+# ============================================================================
+# Qwen2.5-VL-3B model directory
+QWEN_VL_3B_BASE = MODEL_BASE / "models--Qwen--Qwen2.5-VL-3B-Instruct" / "snapshots"
+
+# Function to get the latest snapshot directory
+def get_latest_qwen_snapshot():
+    """Get the latest Qwen model snapshot directory"""
+    if not QWEN_VL_3B_BASE.exists():
+        raise FileNotFoundError(f"Model base directory not found: {QWEN_VL_3B_BASE}")
+
+    snapshots = sorted(QWEN_VL_3B_BASE.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True)
+    if not snapshots:
+        raise FileNotFoundError(f"No snapshots found in {QWEN_VL_3B_BASE}")
+
+    return snapshots[0]
+
+# ============================================================================
+# Retrieval Server Paths (for examples/sglang_multiturn)
+# ============================================================================
+# Index path for retrieval
+RETRIEVAL_INDEX_PATH = Path("/path/to/retrieval/index.index")
+
+# Corpus path for retrieval
+RETRIEVAL_CORPUS_PATH = Path("/path/to/retrieval/corpus.jsonl")
+
+# ============================================================================
+# Helper Functions
+# ============================================================================
+def validate_paths():
+    """Validate that critical paths exist"""
+    critical_paths = {
+        "Project Root": PROJECT_ROOT,
+        "User Data Base": USER_DATA_BASE,
+    }
+
+    missing_paths = []
+    for name, path in critical_paths.items():
+        if not path.exists():
+            missing_paths.append(f"{name}: {path}")
+
+    if missing_paths:
+        print("WARNING: The following critical paths do not exist:")
+        for missing in missing_paths:
+            print(f"  - {missing}")
+        print("\nPlease update git_ignore.py with correct paths for your environment.")
+        return False
+    return True
+
+# ============================================================================
+# Path conversion helpers
+# ============================================================================
+def to_str(path):
+    """Convert Path to string"""
+    return str(path)
+
+def to_path(path_str):
+    """Convert string to Path"""
+    return Path(path_str)
+
+# ============================================================================
+# Export all paths as strings (for backward compatibility)
+# ============================================================================
+# Convert Path objects to strings for easier use in scripts
+PROJECT_ROOT_STR = str(PROJECT_ROOT)
+USER_DATA_BASE_STR = str(USER_DATA_BASE)
+MODEL_BASE_STR = str(MODEL_BASE)
+WORLD_MODEL_VLM_DIR_STR = str(WORLD_MODEL_VLM_DIR)
+VERL_PROJECT_DIR_STR = str(VERL_PROJECT_DIR)
+FAKE_DATASET_JSON_STR = str(FAKE_DATASET_JSON)
+DATA_OUTPUT_DIR_STR = str(DATA_OUTPUT_DIR)
+QWEN_VL_3B_BASE_STR = str(QWEN_VL_3B_BASE)
+RETRIEVAL_INDEX_PATH_STR = str(RETRIEVAL_INDEX_PATH)
+RETRIEVAL_CORPUS_PATH_STR = str(RETRIEVAL_CORPUS_PATH)
+
+if __name__ == "__main__":
+    print("=" * 80)
+    print("Project Path Configuration")
+    print("=" * 80)
+    print(f"\nProject Root: {PROJECT_ROOT}")
+    print(f"User Data Base: {USER_DATA_BASE}")
+    print(f"Model Base: {MODEL_BASE}")
+    print(f"\nFake Dataset JSON: {FAKE_DATASET_JSON}")
+    print(f"Data Output Dir: {DATA_OUTPUT_DIR}")
+    print(f"Qwen VL 3B Base: {QWEN_VL_3B_BASE}")
+    print(f"\nRetrieval Index: {RETRIEVAL_INDEX_PATH}")
+    print(f"Retrieval Corpus: {RETRIEVAL_CORPUS_PATH}")
+    print("\n" + "=" * 80)
+    print("Validating paths...")
+    print("=" * 80)
+    validate_paths()

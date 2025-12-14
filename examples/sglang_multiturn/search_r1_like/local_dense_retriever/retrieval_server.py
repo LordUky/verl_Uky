@@ -17,6 +17,8 @@
 
 import argparse
 import json
+import os
+import sys
 import warnings
 from typing import Optional
 
@@ -28,6 +30,17 @@ import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
 from tqdm import tqdm
+
+# Add project root to Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+sys.path.insert(0, project_root)
+
+try:
+    from git_ignore import RETRIEVAL_INDEX_PATH_STR, RETRIEVAL_CORPUS_PATH_STR
+except ImportError:
+    print("WARNING: git_ignore.py not found. Using default paths. Please copy git_ignore.py.example to git_ignore.py and configure your paths.")
+    RETRIEVAL_INDEX_PATH_STR = None
+    RETRIEVAL_CORPUS_PATH_STR = None
 from transformers import AutoModel, AutoTokenizer
 
 
@@ -376,12 +389,12 @@ def retrieve_endpoint(request: QueryRequest):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Launch the local faiss retriever.")
     parser.add_argument(
-        "--index_path", type=str, default="/home/peterjin/mnt/index/wiki-18/e5_Flat.index", help="Corpus indexing file."
+        "--index_path", type=str, default=RETRIEVAL_INDEX_PATH_STR, help="Corpus indexing file."
     )
     parser.add_argument(
         "--corpus_path",
         type=str,
-        default="/home/peterjin/mnt/data/retrieval-corpus/wiki-18.jsonl",
+        default=RETRIEVAL_CORPUS_PATH_STR,
         help="Local corpus file.",
     )
     parser.add_argument("--topk", type=int, default=3, help="Number of retrieved passages for one query.")

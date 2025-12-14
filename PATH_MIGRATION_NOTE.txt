@@ -1,0 +1,83 @@
+================================================================================
+                    重要通知 / IMPORTANT NOTICE
+================================================================================
+
+本项目已重构路径配置系统！
+The project path configuration system has been refactored!
+
+--------------------------------------------------------------------------------
+                        首次使用必读 / MUST READ
+--------------------------------------------------------------------------------
+
+在新环境中使用此项目前，请执行以下步骤：
+Before using this project in a new environment, please:
+
+1. 复制配置模板 / Copy the template:
+   $ cp git_ignore.py.example git_ignore.py
+
+2. 编辑配置文件 / Edit the config file:
+   $ nano git_ignore.py
+
+   修改这两个变量为你的实际路径：
+   Modify these two variables with your actual paths:
+   - USER_DATA_BASE = Path("/your/userdata/path")
+   - MODEL_BASE = Path("/your/models/path")
+
+3. 验证配置 / Verify configuration:
+   $ python git_ignore.py
+
+4. 开始使用 / Start using:
+   $ ./quick_start_fake_vlm.sh
+
+--------------------------------------------------------------------------------
+                        详细文档 / Documentation
+--------------------------------------------------------------------------------
+
+- QUICK_SETUP_GUIDE.md     - 快速设置指南（推荐先看这个！）
+- PATH_CONFIG_README.md    - 完整使用文档
+- PATH_REFACTORING_SUMMARY.md - 重构技术细节
+
+--------------------------------------------------------------------------------
+                        受影响的文件 / Affected Files
+--------------------------------------------------------------------------------
+
+以下文件已更新，现在从 git_ignore.py 读取路径：
+The following files have been updated to read paths from git_ignore.py:
+
+Python:
+  - examples/data_preprocess/fake_dataset_vlm.py
+  - print_data_info.py
+  - test_mcq_reward.py
+  - examples/sglang_multiturn/search_r1_like/local_dense_retriever/retrieval_server.py
+
+Shell:
+  - examples/grpo_trainer/run_qwen2_5_vl-3b_fake_dataset.sh
+  - quick_start_fake_vlm.sh
+
+--------------------------------------------------------------------------------
+                        优势 / Benefits
+--------------------------------------------------------------------------------
+
+✓ 一次配置，所有脚本自动使用正确路径
+  Configure once, all scripts use correct paths automatically
+
+✓ 环境隔离，git_ignore.py 不会被提交
+  Environment isolation, git_ignore.py won't be committed
+
+✓ 轻松部署到多个环境
+  Easy deployment across multiple environments
+
+--------------------------------------------------------------------------------
+                        快速帮助 / Quick Help
+--------------------------------------------------------------------------------
+
+查看当前配置:
+  $ python git_ignore.py
+
+测试脚本是否工作:
+  $ python examples/data_preprocess/fake_dataset_vlm.py --help
+
+如有问题，请查看:
+  QUICK_SETUP_GUIDE.md
+
+================================================================================
