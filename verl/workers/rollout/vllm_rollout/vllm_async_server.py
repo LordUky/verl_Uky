@@ -11,11 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# Uky: Fix Triton compilation issues BEFORE any vLLM imports
+# This is for vast.ai and similar environments where libcuda.so is not in standard paths
+import os
+cuda_stubs = "/usr/local/cuda/lib64/stubs"
+if os.path.exists(cuda_stubs):
+    current_ld_path = os.environ.get("LD_LIBRARY_PATH", "")
+    if cuda_stubs not in current_ld_path:
+        os.environ["LD_LIBRARY_PATH"] = f"{cuda_stubs}:{current_ld_path}"
+
 import argparse
 import asyncio
 import json
 import logging
-import os
 from pprint import pprint
 from typing import Any, Callable, Optional
 
@@ -35,7 +44,12 @@ from vllm.inputs import TokensPrompt
 from vllm.lora.request import LoRARequest
 from vllm.outputs import RequestOutput
 from vllm.usage.usage_lib import UsageContext
-from vllm.utils import FlexibleArgumentParser, get_tcp_uri
+# from vllm.utils import FlexibleArgumentParser, get_tcp_uri # uky
+from vllm.v1.utils import get_tcp_uri # uky
+try: # uky
+    from vllm.utils import FlexibleArgumentParser # uky
+except ImportError: # uky 
+    from vllm.utils.argparse_utils import FlexibleArgumentParser # uky
 from vllm.v1.engine.async_llm import AsyncLLM
 from vllm.v1.engine.core import EngineCoreProc
 from vllm.v1.engine.utils import CoreEngineProcManager
@@ -347,7 +361,8 @@ class vLLMHttpServerBase:
         engine_client = AsyncLLM.from_vllm_config(
             vllm_config=vllm_config,
             usage_context=usage_context,
-            disable_log_requests=engine_args.disable_log_requests,
+            # disable_log_requests=engine_args.disable_log_requests, # Uky
+            enable_log_requests=engine_args.enable_log_requests, # Uky
             disable_log_stats=engine_args.disable_log_stats,
         )
 
@@ -355,7 +370,8 @@ class vLLMHttpServerBase:
         await engine_client.reset_mm_cache()
 
         app = build_app(args)
-        await init_app_state(engine_client, vllm_config, app.state, args)
+        # await init_app_state(engine_client, vllm_config, app.state, args) # uky
+        await init_app_state(engine_client, app.state, args) # uky
         if self.replica_rank == 0 and self.node_rank == 0:
             logger.info(f"Initializing a V1 LLM engine with config: {vllm_config}")
 

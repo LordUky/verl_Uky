@@ -1,0 +1,18 @@
+# vLLM/VERL 环境配置
+export RAY_num_prestart_python_workers=1
+export RAY_worker_register_timeout_seconds=600
+export OMP_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+export TRITON_CACHE_DIR=/tmp/triton_cache
+export VLLM_USE_TRITON_FLASH_ATTN=0
+export VLLM_ATTENTION_BACKEND=FLASH_ATTN
+export VLLM_WORKER_USE_RAY=1
+
+# CUDA 环境配置（不要把 stubs 放在 LD_LIBRARY_PATH 中，会导致运行时问题）
+export CUDA_HOME="/usr/local/cuda"
+export PATH="${CUDA_HOME}/bin:${PATH}"
+export LD_LIBRARY_PATH="${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}"
+
+# 使用 GCC wrapper 来自动添加 CUDA stubs 路径（仅编译时使用，解决 Ray 子进程编译问题）
+export CC=/usr/local/bin/gcc-wrapper

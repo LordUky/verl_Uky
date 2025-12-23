@@ -26,6 +26,15 @@ When working with Megatron:
 - After inference, all the parameters that doesn't belong to this pp rank is freed.
 """
 
+# Uky: Fix Triton compilation issues BEFORE any vLLM imports
+# This is for vast.ai and similar environments where libcuda.so is not in standard paths
+import os
+cuda_stubs = "/usr/local/cuda/lib64/stubs"
+if os.path.exists(cuda_stubs):
+    current_ld_path = os.environ.get("LD_LIBRARY_PATH", "")
+    if cuda_stubs not in current_ld_path:
+        os.environ["LD_LIBRARY_PATH"] = f"{cuda_stubs}:{current_ld_path}"
+
 import asyncio
 import getpass
 import inspect

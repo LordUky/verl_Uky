@@ -108,6 +108,11 @@ echo ""
 
 # Ask for confirmation
 read -p "准备开始训练，是否继续? (Y/n): " -n 1 -r
+
+export RAY_num_prestart_python_workers=2
+export RAY_worker_register_timeout_seconds=300
+
+
 echo
 if [[ ! $REPLY =~ ^[Nn]$ ]]; then
     echo "开始训练..."
